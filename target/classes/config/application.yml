@@ -1,0 +1,89 @@
+server:
+  port: 0
+  shutdown-wait-time: 30000
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    elasticsearch:
+      cluster-nodes: localhost:1212
+      cluster-name: elasticsearch
+
+  application:
+    name: beemart-service
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://192.168.13.45:3308/beemart?useLegacyDatetimeCode=false&serverTimezone=+07:00
+    username: beemart
+    password: 6wpgDnkrxZJbU9bi
+    driver-class-name: org.mariadb.jdbc.Driver
+#  datasource:
+#    type: com.zaxxer.hikari.HikariDataSource
+#    url: jdbc:mariadb://127.0.0.1:3306/beemart
+#    username: root
+#    password: root
+#    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      hbm2ddl:
+        auto: create
+
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+    generate-ddl: true
+  kafka:
+    bootstrap-servers: 192.168.13.21:9092,192.168.13.22:9092,192.168.13.23:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        max:
+          in:
+            flight:
+              requests:
+                per:
+                  connection: 1
+          request:
+            size: 10485760
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      max-poll-records: 100
+      properties:
+        max:
+          partition:
+            fetch:
+              bytes: 10485760
+beemart:
+  pos:
+    base-url: https://beemart-dev.mysapo.vn
+    token: 7ac82024eb404fc59b20f3abc40df271
+  integration:
+    kafka-consumer-group-id: beemart-service
+    pos:
+      kafka:
+        inventory-topic: beemart.pos.webhook.inventory
+        product-topic: beemart.pos.webhook.product
+        product-topic-key-header: X-Sapo-Product-Id
+        product-consumer-group-id: ${beemart.integration.kafka-consumer-group-id}
+        order-topic: beemart.pos.webhook.order
+        order-topic-key-header: X-Sapo-Order-Id
+        order-consumer-group-id: ${beemart.integration.kafka-consumer-group-id}
+    web:
+      kafka:
+        product-topic: beemart.web.webhook.product
+        product-topic-key-header: X-Bizweb-Product-Id
+        product-consumer-group-id: ${beemart.integration.kafka-consumer-group-id}
+    sync:
+      kafka:
+        product-topic: beemart.sync.webhook.product
+        product-topic-key-header:
+        product-consumer-group-id: ${beemart.integration.kafka-consumer-group-id}
