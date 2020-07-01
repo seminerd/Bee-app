@@ -17,7 +17,7 @@
         <springfox.version>2.9.2</springfox.version>
 		<sun-jaxb.version>2.3.1</sun-jaxb.version>
 		<sentry.version>1.7.0</sentry.version>
-		<log4j.version>2.12.1</log4j.version>
+		<log4j.version>2.13.3</log4j.version>
         <guava.version>20.0</guava.version>
 		<orika-core.version>1.5.4</orika-core.version>
 		<commons-io.version>2.6</commons-io.version>
